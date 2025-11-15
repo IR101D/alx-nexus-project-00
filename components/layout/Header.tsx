@@ -26,19 +26,19 @@ const Header : React.FC = () => {
           {/* App Name - Left */}
           <div className="flex-1">
             <Link href="/" className="text-xl font-bold text-gray-900">
-              YourApp
+              E-Nexus
             </Link>
           </div>
 
           {/* Centered Navigation Links */}
           <nav className="hidden md:flex flex-1 justify-center space-x-8">
-            <Link href="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
+            <Link href="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-lg font-medium">
               Home
             </Link>
-            <Link href="/product" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
+            <Link href="/products" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-lg font-medium">
               Product
             </Link>
-            <Link href="/contact" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
+            <Link href="/contact" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-lg font-medium">
               Contact
             </Link>
           </nav>
