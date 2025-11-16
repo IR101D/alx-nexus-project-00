@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { MapPin, Phone, Mail, Facebook, Twitter, Instagram } from 'lucide-react';
+import Button from "../Button";
 
 const Footer: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -144,12 +145,12 @@ const Footer: React.FC = () => {
                                 "
                                 required />
                             </div>
-                            <button
+                            <Button
                             type="submit"
-                            className="w-full bg-[#B88E2F]  text-black font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#B88E2F]"
+                            className="w-full py-3 px-6  focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#B88E2F]"
                              >
                                 Subscribe
-                             </button>
+                             </Button>
                         </form>
                         
                     </div>

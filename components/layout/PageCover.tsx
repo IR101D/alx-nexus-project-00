@@ -1,15 +1,8 @@
 // components/MinimalPageCover.tsx
-interface PageCoverProps {
-  pageTitle: string;
-  height?: string;
-  overlayOpacity?: number;
-}
+import { PageCoverProps } from "@/interfaces";
 
-const PageCover = ({ 
-  pageTitle, 
-  height = "h-48",
-  overlayOpacity = 30
-}: PageCoverProps) => {
+const PageCover = ({ pageTitle, height = "h-48",overlayOpacity = 30}: PageCoverProps) => 
+  {
   return (
     <div
       className={`relative ${height} w-full bg-cover bg-center bg-no-repeat`}
