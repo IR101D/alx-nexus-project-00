@@ -53,6 +53,19 @@ export interface ProductsGridProps {
   onClearFilters: () => void;
 }
 
+export interface ProductSearchProps {
+  products: Product[];
+  onSearchResults: (results: Product[]) => void;
+  className?: string;
+  placeholder?: string;
+}
+
+export interface SearchModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  products: Product[];
+}
+
 export interface FilterProps {
   filters: {
     category: string;
@@ -69,4 +82,18 @@ export interface PaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+}
+
+export interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+  color: string;
+  size: string;
+}
+
+export interface CartState {
+  items: CartItem[];
 }

@@ -2,13 +2,24 @@
 import { useRouter } from 'next/router';
 import Button from '../Button';
 import { Product,ProductCardProps } from '@/interfaces';
+import { useAppDispatch } from '@/src/store/hooks/redux';
+import { addItem } from '@/src/store/slices/cartSlice';
 
   const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent navigation when clicking add to cart
-    onAddToCart(product);
+     dispatch(addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      color: "Default",
+      size: "Standard"  
+    }));
+    alert('Added to cart:');
   };
 
   const handleProductClick = () => {

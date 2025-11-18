@@ -1,3 +1,4 @@
+import { CartState } from "@/interfaces";
 import Products from "@/pages/products";
 
 // Why Choose Us data
@@ -156,3 +157,5 @@ export const Productsreviews = [
     date: "3 weeks ago"
   }
 ];
+
+

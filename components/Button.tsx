@@ -1,4 +1,3 @@
-// components/SimpleButton.tsx
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 import { ButtonProps } from '@/interfaces';
 
@@ -13,7 +12,7 @@ const Button = ({
   
   const variants = {
     primary: 'bg-[#B88E2F] text-black hover:bg-[#A67C2A] transition-colors duration-200',
-    secondary: 'bg-gray-600 text-black hover:bg-gray-700'
+    secondary: 'bg-[#B88E2F] text-black hover:bg-[#A67C2A]'
   };
 
   const sizes = {

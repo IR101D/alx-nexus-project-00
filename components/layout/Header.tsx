@@ -1,23 +1,30 @@
-// components/HeaderWithSearch.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart } from 'lucide-react';
+import { Search } from 'lucide-react';
+import CartIcon from '../Products/CartIcon';
+import { Product } from '@/interfaces';
+import { ProductsData } from '@/constants/data';
+import SearchModal from '../Products/SearchModal';
 
 const Header : React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      // Handle search logic here
-      console.log('Searching for:', searchQuery);
-      // You can redirect to search page or perform search
-    }
-  };
+  // Fetch products for search (you might want to use a context or global state)
+  useEffect(() => {
+   //replace with API request later
+    setProducts(ProductsData);
+  }, []);
 
+  const navLinks = [
+    { href: '/', label: 'Home' },
+    { href: '/products', label: 'Products' },
+    { href: '/contact', label: 'Contact' },
+  ];
+  
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,13 +62,13 @@ const Header : React.FC = () => {
 
             {/* Cart Icon */}
             <button className="text-gray-500 hover:text-gray-700 p-2">
-              <ShoppingCart/>
+              <CartIcon/>
             </button>
           </div>
         </div>
 
         {/* Search Bar - Slides down when open */}
-        {isSearchOpen && (
+       {/** {isSearchOpen && (
           <div className="border-t border-gray-200 py-4">
             <form onSubmit={handleSearch} className="flex space-x-4">
               <div className="flex-1 relative">
@@ -88,8 +95,15 @@ const Header : React.FC = () => {
                 Cancel
               </button>
             </form>
-          </div>
-        )}
+          </div> 
+        )}*/} 
+           {/* Search Modal */}
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        products={products}
+      />
+
       </div>
     </header>
   );
