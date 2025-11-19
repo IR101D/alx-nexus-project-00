@@ -1,7 +1,7 @@
 // components/ProductsGrid.tsx
 import ProductCard from './productCard';
 import Button from '../Button';
-import { ProductsGridProps } from '@/interfaces';
+import { ProductsGridProps, Product } from '@/interfaces';
 
 
 
@@ -35,8 +35,8 @@ const ProductsGrid = ({
       {/* Products Count */}
       <div className="mb-6">
         <p className="text-gray-600">
-          Showing {indexOfFirstProduct + 1}-{Math.min(indexOfLastProduct, totalProducts)} of {totalProducts} products
-        </p>
+          Showing {products.length} of {totalProducts} products
+          {indexOfFirstProduct > 0 && ` (page ${currentPage})`}        </p>
       </div>
 
       {/* Products Grid */}

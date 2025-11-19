@@ -22,9 +22,11 @@ export default function HomePage() {
             <p className="text-xl md:text-2xl text-black mb-8 max-w-2xl mx-auto">
               Discover premium furniture that combines style, comfort, and durability for your dream home.
             </p>
+            <Link href='/products'>
             <Button className="border-2 px-8 py-4 rext-lg font-semibold">
               Shop Collection
             </Button>
+            </Link>
           </div>
         </div>
       </section>

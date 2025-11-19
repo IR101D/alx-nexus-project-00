@@ -12,7 +12,7 @@ const CartIcon = () => {
         <Link href="/cart" className="relative text-gray-500 hover:text-gray-700 p-2">
             <ShoppingCart/>
             {itemCount > 0 && (
-        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+        <span className="absolute -bottom-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
           {itemCount}
         </span>
       )}

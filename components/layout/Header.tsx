@@ -23,13 +23,14 @@ const Header : React.FC = () => {
     { href: '/', label: 'Home' },
     { href: '/products', label: 'Products' },
     { href: '/contact', label: 'Contact' },
+    { href: '/orders', label: 'orders'},
   ];
   
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Header Row */}
-        <div className="flex items-center justify-between h-16">
+        <div className="mx-auto flex items-center justify-between h-16">
           {/* App Name - Left */}
           <div className="flex-1">
             <Link href="/" className="text-xl font-bold text-gray-900">
@@ -38,15 +39,18 @@ const Header : React.FC = () => {
           </div>
 
           {/* Centered Navigation Links */}
-          <nav className="hidden md:flex flex-1 justify-center space-x-8">
+          <nav className=" md:flex flex-1 justify-center space-x-8">
             <Link href="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-lg font-medium">
               Home
             </Link>
             <Link href="/products" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-lg font-medium">
-              Product
+              Products
             </Link>
             <Link href="/contact" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-lg font-medium">
               Contact
+            </Link>
+            <Link href="/orders" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-lg font-medium">
+              Orders
             </Link>
           </nav>
 
@@ -64,6 +68,10 @@ const Header : React.FC = () => {
             <button className="text-gray-500 hover:text-gray-700 p-2">
               <CartIcon/>
             </button>
+             <Link href="/signin" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
+              Sign In
+            </Link>
+
           </div>
         </div>
 

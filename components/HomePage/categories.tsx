@@ -1,6 +1,7 @@
 import React from "react"
 import { categories } from "@/constants/data"
 import Button from "../Button"
+import Link from "next/link"
 const Categories: React.FC = () => {
     return (
         <section className="py-20">
@@ -28,9 +29,11 @@ const Categories: React.FC = () => {
             ))}
           </div>  
           <div className="text-center">
+            <Link href='/products'>
             <Button className="border-1 px-8 py-3 rounded-lg ">
               Show More Categories
             </Button>
+            </Link>
           </div>
         </div>
       </section>

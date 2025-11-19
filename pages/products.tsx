@@ -1,12 +1,12 @@
 'use client';
 import PageCover from "../components/layout/PageCover";
-import React from "react";
+import React, { useCallback } from "react";
 import { useState, useEffect } from "react";
 import ProductFilters from "@/components/Products/ProductFilters";
 import ProductCard from "@/components/Products/productCard";
 import Pagination from "@/components/Products/Pagination";
 import { Product } from "@/interfaces";
-import { ProductsData } from "@/constants/data";
+import { productData, ProductsData } from "@/constants/data";
 import ProductsGrid from "@/components/Products/ProductsGrid";
 import { useRouter } from "next/navigation";
 
@@ -14,21 +14,29 @@ const Products: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [filters, setFilters] = useState({
+      const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [viewType, setViewType] = useState<'pagination' | 'infinite'>('pagination');
+  
+  const productsPerPage = 9;
+  const [loadedProductsCount, setLoadedProductsCount] = useState(productsPerPage);
+
+  const [filters, setFilters] = useState({
         category: 'all',
         priceRange: 'all',
         inStock: false,
         sortBy: 'name'
     });
-    const productsPerPage = 9;
     useEffect(()=> {ProductsData;
         setProducts(ProductsData);
         setFilteredProducts(ProductsData);
+        setDisplayedProducts(ProductsData);
     },[]);
 
     //filters products
       useEffect(() => {
-    let result = [...products];
+    let result = [...displayedProducts];
 
     // Category filter
     if (filters.category !== 'all') {
@@ -68,7 +76,20 @@ const Products: React.FC = () => {
     }
     setFilteredProducts(result);
     setCurrentPage(1);
-      },[filters, products]);
+    setLoadedProductsCount(productsPerPage);
+      },[filters, products,displayedProducts,productsPerPage]);
+     
+       // Get current products based on view type
+  const getCurrentProducts = () => {
+    if (viewType === 'pagination') {
+      const indexOfLastProduct = currentPage * productsPerPage;
+      const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+      return filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+    } else {
+      // Infinite scrolling - show loaded products count
+      return filteredProducts.slice(0, loadedProductsCount);
+    }
+  };
 
       // products for thepage
 
@@ -76,9 +97,23 @@ const Products: React.FC = () => {
       const indexofFirstProduct = indexOfLastProducts - productsPerPage;
       const currentProducts = filteredProducts.slice(indexofFirstProduct, indexOfLastProducts);
       const totalPages = Math.ceil(filteredProducts.length/productsPerPage);
-      const handleFilterChange = (key: string, value: string | boolean) => {
+      const hasMoreProducts = loadedProductsCount < filteredProducts.length;      const handleFilterChange = (key: string, value: string | boolean) => {
          setFilters(prev => ({ ...prev, [key]: value }));
        };
+
+        // Load more products for infinite scrolling
+     const handleLoadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMoreProducts) return;
+
+    setIsLoadingMore(true);
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setLoadedProductsCount(prev => prev + productsPerPage);
+    setIsLoadingMore(false);
+  }, [isLoadingMore, hasMoreProducts, productsPerPage]);
+
       const clearFilters = () => {
            setFilters({
              category: 'all',
@@ -87,12 +122,22 @@ const Products: React.FC = () => {
              sortBy: 'name'
           });
        };
+
       const handleAddToCart = (product: Product)=> {
         console.log('Added to cart:', product);
+        alert(`${product.name} added to cart!`);
       };
       const handlePageChange = (page: number) => {
         setCurrentPage(page);
+            // Scroll to top when changing pages
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
+
+      const toggleViewType = () => {
+    setViewType(prev => prev === 'pagination' ? 'infinite' : 'pagination');
+    setCurrentPage(1);
+    setLoadedProductsCount(productsPerPage);
+  };
       return (
         <div>
          <PageCover
@@ -108,6 +153,21 @@ const Products: React.FC = () => {
           <p className="text-gray-600 mt-2">Discover our amazing furniture collection</p>
         </div>
       </div>
+
+         {/* View Type Toggle */}
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-600">View:</span>
+              <button
+                onClick={toggleViewType}
+                className={`px-4 py-2 rounded-lg border transition-colors duration-200 ${
+                  viewType === 'pagination'
+                    ? 'bg-[#B88E2F] text-white border-[#B88E2F]'
+                    : 'border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {viewType === 'pagination' ? 'Pagination' : 'Infinite Scroll'}
+              </button>
+            </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
@@ -137,6 +197,10 @@ const Products: React.FC = () => {
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
+              onLoadMore={viewType === 'infinite' ? handleLoadMore : undefined}
+              hasMore={hasMoreProducts}
+              isLoading={isLoadingMore}
+              showViewType={viewType}
             />
           </div>
         </div>

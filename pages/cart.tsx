@@ -231,6 +231,7 @@ export default function Cart () {
               </div>
 
               {/* Checkout Button */}
+              <Link href="/checkout">
               <Button 
                 variant="primary" 
                 size="lg" 
@@ -239,6 +240,7 @@ export default function Cart () {
               >
                 Proceed to Checkout
               </Button>
+              </Link>
 
               {/* Additional Info */}
               <div className="mt-6 text-center">
