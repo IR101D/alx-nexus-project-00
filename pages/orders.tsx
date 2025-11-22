@@ -272,7 +272,7 @@ export default function OrderTrackingPage() {
                     <div key={index} className="flex items-start space-x-4">
                       <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
                         index <= order.timeline.findIndex(e => e.status === order.status) 
-                          ? 'bg-[#B88E2F] text-white' 
+                          ? 'bg-[#B88E2F] text-white'
                           : 'bg-gray-200 text-gray-400'
                       }`}>
                         {index + 1}
@@ -369,7 +369,7 @@ export default function OrderTrackingPage() {
             </div>
 
             {/* Help Section */}
-            <div className="bg-blue-50 rounded-lg p-6">
+          {/**  <div className="bg-blue-50 rounded-lg p-6">
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
                   ❓
@@ -389,7 +389,7 @@ export default function OrderTrackingPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div>*/} 
           </div>
         )}
 

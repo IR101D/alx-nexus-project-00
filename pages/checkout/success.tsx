@@ -16,16 +16,25 @@ export default function CheckoutSuccessPage() {
             You will receive an email confirmation shortly with your order details.
           </p>
           <div className="space-y-4">
-            <Link href="/products">
-              <Button variant="primary" size="lg" className="w-full">
+           {/**  <Link href="/products">
+             <Button variant="primary" size="lg" className="w-full">
                 Continue Shopping
               </Button>
-            </Link>
-            <Link href="/orders">
+              </Link>
+              */} 
+
+
+             <Link href="/orders">
               <Button variant="secondary" className="w-full">
                 View Your Orders
               </Button>
             </Link>
+            
+              <div className="mt-4 text-center">
+                  <Link href="/products" className="text-[#B88E2F] hover:underline font-medium">
+                    ← Continue Shopping
+                  </Link>
+                </div>
           </div>
         </div>
       </div>
