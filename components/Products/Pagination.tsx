@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { PaginationProps } from '@/interfaces';
 
 const Pagination = ({ 
@@ -16,6 +16,7 @@ const Pagination = ({
   showViewType?: 'pagination' | 'infinite' | 'both';
 }) => {
   const [isInView, setIsInView] = useState(false);
+  const prevInViewRef = useRef(false);
 
   // Intersection Observer for infinite scrolling
   const loadMoreRef = useCallback((node: HTMLDivElement | null) => {
@@ -36,9 +37,13 @@ const Pagination = ({
 
   // Trigger load more when element comes into view
   useEffect(() => {
-    if (isInView && hasMore && !isLoading && onLoadMore) {
+    // Only trigger load when sentinel transitions from not-in-view -> in-view
+    if (isInView && !prevInViewRef.current && hasMore && !isLoading && onLoadMore) {
       onLoadMore();
     }
+
+    // Update previous in-view ref for next effect run
+    prevInViewRef.current = isInView;
   }, [isInView, hasMore, isLoading, onLoadMore]);
 
   // Generate page numbers with ellipsis for better UX
