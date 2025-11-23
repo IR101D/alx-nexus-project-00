@@ -39,6 +39,19 @@ export interface Product {
   inStock: boolean;
 }
 
+export interface ApiProduct {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  imageUrl: string;
+  categoryId: number;
+  categoryName: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Category {
   id: number;
   name: string;

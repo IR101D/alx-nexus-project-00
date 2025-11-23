@@ -4,6 +4,7 @@ import React, { useCallback } from "react";
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/src/store/hooks/redux";
 import { fetchCategories } from "@/src/store/slices/categoriesSlice";
+import { fetchProducts } from "@/src/store/slices/productsSlice";
 import ProductFilters from "@/components/Products/ProductFilters";
 import ProductCard from "@/components/Products/productCard";
 import Pagination from "@/components/Products/Pagination";
@@ -13,6 +14,8 @@ import ProductsGrid from "@/components/Products/ProductsGrid";
 import { useRouter } from "next/navigation";
 
 const Products: React.FC = () => {
+  const dispatch = useAppDispatch();
+
     const [products, setProducts] = useState<Product[]>([]);
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -31,20 +34,42 @@ const Products: React.FC = () => {
         sortBy: 'name'
     });
     
-    const dispatch = useAppDispatch();
 
     // categories from redux
     const categories = useAppSelector((state) => state.categories.items);
 
+    // products from redux (API)
+    const apiProducts = useAppSelector((state) => state.products.items);
+
     useEffect(() => {
       // fetch categories on mount
       dispatch(fetchCategories() as any);
+      // fetch products on mount
+      dispatch(fetchProducts() as any);
     }, [dispatch]);
-    useEffect(()=> {ProductsData;
+
+    useEffect(() => {
+      // When API products are available, map them to the UI Product shape
+      if (apiProducts && apiProducts.length > 0) {
+        const mapped = apiProducts.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+          image: p.imageUrl || "/assets/images/sofa.jpg",
+          category: p.categoryName || "uncategorized",
+          rating: 0,
+          inStock: p.stock > 0,
+        }));
+        setProducts(mapped);
+        setFilteredProducts(mapped);
+        setDisplayedProducts(mapped);
+      } else {
+        // fallback to local data
         setProducts(ProductsData);
         setFilteredProducts(ProductsData);
         setDisplayedProducts(ProductsData);
-    },[]);
+      }
+    }, [apiProducts]);
 
     //filters products
       useEffect(() => {
