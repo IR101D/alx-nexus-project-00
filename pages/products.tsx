@@ -1,7 +1,9 @@
-'use client';
+"use client";
 import PageCover from "../components/layout/PageCover";
 import React, { useCallback } from "react";
 import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/src/store/hooks/redux";
+import { fetchCategories } from "@/src/store/slices/categoriesSlice";
 import ProductFilters from "@/components/Products/ProductFilters";
 import ProductCard from "@/components/Products/productCard";
 import Pagination from "@/components/Products/Pagination";
@@ -28,6 +30,16 @@ const Products: React.FC = () => {
         inStock: false,
         sortBy: 'name'
     });
+    
+    const dispatch = useAppDispatch();
+
+    // categories from redux
+    const categories = useAppSelector((state) => state.categories.items);
+
+    useEffect(() => {
+      // fetch categories on mount
+      dispatch(fetchCategories() as any);
+    }, [dispatch]);
     useEffect(()=> {ProductsData;
         setProducts(ProductsData);
         setFilteredProducts(ProductsData);
@@ -178,6 +190,7 @@ const Products: React.FC = () => {
               onFilterChange={handleFilterChange}
               onClearFilters={clearFilters}
               productCount={filteredProducts.length}
+              categories={categories}
             />
           </div>
 

@@ -1,6 +1,6 @@
-import { FilterProps } from "@/interfaces";
+import { Category, FilterProps } from "@/interfaces";
 
-const ProductFilters = ({ filters, onFilterChange, onClearFilters, productCount }: FilterProps) => {
+const ProductFilters = ({ filters, onFilterChange, onClearFilters, productCount, categories }: FilterProps & { categories?: Category[] }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm p-6 sticky top-8">
       <div className="flex justify-between items-center mb-6">
@@ -22,10 +22,11 @@ const ProductFilters = ({ filters, onFilterChange, onClearFilters, productCount 
           className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B88E2F] focus:border-transparent"
         >
           <option value="all">All Categories</option>
-          <option value="living-room">Living Room</option>
-          <option value="bedroom">Bedroom</option>
-          <option value="dining">Dining</option>
-          <option value="office">Office</option>
+          {categories?.map((category:Category) => (
+            <option key={category.id} value={category.name}>
+              {category.name}
+            </option>
+          ))}
         </select>
       </div>
 

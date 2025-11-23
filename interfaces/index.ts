@@ -39,6 +39,14 @@ export interface Product {
   inStock: boolean;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  coverImage: string;
+  createdAt: string; // ISO timestamp
+  updatedAt: string; // ISO timestamp
+}
+
 export interface ProductCardProps {
   product: Product;
   onAddToCart: (product: Product) => void;
@@ -72,6 +80,7 @@ export interface FilterProps {
     priceRange: string;
     inStock: boolean;
     sortBy: string;
+    categories?: any;
   };
   onFilterChange: (key: string, value: string | boolean) => void;
   onClearFilters: () => void;
