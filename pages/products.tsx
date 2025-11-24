@@ -1,7 +1,7 @@
 "use client";
 import PageCover from "../components/layout/PageCover";
 import React, { useCallback } from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "@/src/store/hooks/redux";
 import { fetchCategories } from "@/src/store/slices/categoriesSlice";
 import { fetchProducts } from "@/src/store/slices/productsSlice";
@@ -139,17 +139,23 @@ const Products: React.FC = () => {
        };
 
         // Load more products for infinite scrolling
-     const handleLoadMore = useCallback(async () => {
-    if (isLoadingMore || !hasMoreProducts) return;
+  const isLoadingMoreRef = useRef(false);
 
+  const handleLoadMore = useCallback(async () => {
+    if (isLoadingMoreRef.current || !hasMoreProducts) return;
+
+    // Immediate guard to prevent duplicate triggers before state updates
+    isLoadingMoreRef.current = true;
     setIsLoadingMore(true);
-    
+
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setLoadedProductsCount(prev => prev + productsPerPage);
+    await new Promise((resolve) => setTimeout(resolve, 400));
+
+    setLoadedProductsCount((prev) => prev + productsPerPage);
+
     setIsLoadingMore(false);
-  }, [isLoadingMore, hasMoreProducts, productsPerPage]);
+    isLoadingMoreRef.current = false;
+  }, [hasMoreProducts, productsPerPage]);
 
       const clearFilters = () => {
            setFilters({
@@ -236,7 +242,7 @@ const Products: React.FC = () => {
           {/* Products Grid */}
           <div className="lg:w-3/4">
             <ProductsGrid
-              products={currentProducts}
+              products={getCurrentProducts()}
               currentPage={currentPage}
               productsPerPage={productsPerPage}
               totalProducts={filteredProducts.length}
