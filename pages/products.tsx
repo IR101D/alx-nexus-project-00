@@ -9,7 +9,7 @@ import ProductFilters from "@/components/Products/ProductFilters";
 import ProductCard from "@/components/Products/productCard";
 import Pagination from "@/components/Products/Pagination";
 import { Product } from "@/interfaces";
-import { productData, ProductsData } from "@/constants/data";
+import { ProductsData } from "@/constants/data";
 import ProductsGrid from "@/components/Products/ProductsGrid";
 import { useRouter } from "next/navigation";
 
@@ -19,7 +19,6 @@ const Products: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-      const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [viewType, setViewType] = useState<'pagination' | 'infinite'>('pagination');
