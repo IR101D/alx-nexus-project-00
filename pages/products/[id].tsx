@@ -247,7 +247,7 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Features */}
-              <div className="border-t border-gray-200 pt-6">
+                 {/**  <div className="border-t border-gray-200 pt-6">
                 <h3 className="font-semibold text-gray-900 mb-3">Key Features</h3>
                 <ul className="space-y-2">
                   {displayProduct.features.map((feature, index) => (
@@ -257,7 +257,7 @@ export default function ProductDetailPage() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </div>*/}  
             </div>
           </div>
           )}
