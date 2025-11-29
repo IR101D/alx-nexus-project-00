@@ -3,24 +3,7 @@ import { CartItem,CartState } from "@/interfaces";
 
 export const initialState: CartState = {
   items: [
-    {
-      id: 1,
-      name: "Modern Sofa",
-      price: 1299,
-      image: "/assets/images/sofa.jpg",
-      quantity: 1,
-      color: "Charcoal Gray",
-      size: "Large"
-    },
-    {
-      id: 2,
-      name: "Office Chair",
-      price: 299,
-      image: "/assets/images/office-chair.jpg",
-      quantity: 2,
-      color: "Black",
-      size: "Standard"
-    }
+
   ],
 };
 

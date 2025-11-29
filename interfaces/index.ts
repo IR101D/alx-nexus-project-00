@@ -207,3 +207,22 @@ export interface Order {
   carrier?: string;
   timeline: OrderStatus[];
 }
+
+export interface ApiCartItemResponse {
+    productId: number;
+    productName: string;
+    imageUrl: string;
+    unitPrice: number;
+    quantity: number;
+    lineTotal: number;
+}
+
+export interface ApiCartResponse {
+    items: ApiCartItemResponse[];
+    total: number;
+}
+
+export interface ApiCartItemRequest {
+    productId: number;
+    quantity?: number; // default on backend is likely 1
+}
