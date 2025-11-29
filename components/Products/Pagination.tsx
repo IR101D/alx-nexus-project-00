@@ -185,10 +185,7 @@ const Pagination = ({
         </div>
       )}
 
-      {/* Page Info */}
-      <div className="text-center text-sm text-gray-500">
-        Page {currentPage} of {totalPages}
-      </div>
+
     </div>
   );
 };

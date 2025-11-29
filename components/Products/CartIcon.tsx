@@ -8,14 +8,16 @@ import { ShoppingCart } from "lucide-react";
 const CartIcon = () => {
     const itemCount = useAppSelector(selectCartItemsCount);
 
-    return(
-        <Link href="/cart" className="relative text-gray-500 hover:text-gray-700 p-2">
-            <ShoppingCart/>
-            {itemCount > 0 && (
-        <span className="absolute -bottom-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+    return (
+        <Link href="/cart" className="relative text-gray-500 hover:text-gray-700 p-2 flex items-center justify-center">
+    <span className="relative inline-block">
+      <ShoppingCart className="w-7 h-7" />
+        {itemCount > 0 && (
+            <span className="absolute -bottom-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
           {itemCount}
         </span>
-      )}
+        )}
+    </span>
         </Link>
     );
 };

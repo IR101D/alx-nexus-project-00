@@ -12,6 +12,8 @@ import { Product } from "@/interfaces";
 import { ProductsData } from "@/constants/data";
 import ProductsGrid from "@/components/Products/ProductsGrid";
 import { useRouter } from "next/navigation";
+import { addToCartAsync } from "@/src/store/slices/cartSlice";
+import Swal from "sweetalert2";
 
 const Products: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -42,9 +44,9 @@ const Products: React.FC = () => {
 
     useEffect(() => {
       // fetch categories on mount
-      dispatch(fetchCategories() as any);
+      dispatch(fetchCategories());
       // fetch products on mount
-      dispatch(fetchProducts() as any);
+      dispatch(fetchProducts());
     }, [dispatch]);
 
     useEffect(() => {
@@ -165,9 +167,27 @@ const Products: React.FC = () => {
           });
        };
 
-      const handleAddToCart = (product: Product)=> {
-        console.log('Added to cart:', product);
-        alert(`${product.name} added to cart!`);
+      const handleAddToCart = async (product: Product)=> {
+        try {
+          await dispatch(addToCartAsync({ productId: product.id, quantity: 1 }));
+          await Swal.fire({
+            icon: 'success',
+            title: 'Added to cart',
+            text: `${product.name} has been added to your cart.`,
+            timer: 1500,
+            showConfirmButton: false,
+            position: 'top-end',
+            toast: true,
+          });
+        } catch (err) {
+          const message = err instanceof Error ? err.message : 'Failed to add to cart';
+          await Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message,
+          });
+          console.error('Add to cart error:', err);
+        }
       };
       const handlePageChange = (page: number) => {
         setCurrentPage(page);
