@@ -12,8 +12,9 @@ import {
 import { clearCart } from '@/src/store/slices/cartSlice';
 import Button from '@/components/Button';
 import Link from 'next/link';
-import { CheckoutFormData } from '@/interfaces';
+import { CheckoutFormData, ShippingAddress } from '@/interfaces';
 import PageCover from '@/components/layout/PageCover';
+import ordersService from '@/src/services/ordersService';
 
 
 export default function CheckoutPage() {
@@ -99,9 +100,21 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      // Map form data to API shipping address structure
+      const shippingAddress: ShippingAddress = {
+        fullName: `${formData.firstName} ${formData.lastName}`.trim(),
+        line1: formData.streetAddress,
+        line2: formData.apartment,
+        city: formData.city,
+        state: formData.province,
+        postalCode: formData.zipCode,
+        country: formData.country,
+        phone: formData.phone,
+      };
+
+      // Call checkout API
+      await ordersService.checkoutOrder(shippingAddress,formData.email?? '');
+
       // Clear cart and redirect to success page
       dispatch(clearCart());
       router.push('/checkout/success');
