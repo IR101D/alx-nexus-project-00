@@ -230,6 +230,22 @@ export interface CheckoutResponse {
   orderId?: string | number;
   status?: string;
   message?: string;
+  // Added: tracking code returned by backend after successful checkout
+  trackingCode?: string;
+}
+
+// Track Order API types
+export interface TrackOrderRequest {
+  orderId?: string | number;
+  trackingCode?: string;
+  email: string; // required
+}
+
+export interface TrackOrderResponse {
+  orderId?: string | number;
+  email: string;
+  steps: string[]; // e.g., ["Order Received", "Payment Confirmed", ...]
+  message?: string; // friendly failure message on errors
 }
 
 export interface ApiCartItemResponse {

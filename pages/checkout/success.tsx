@@ -1,8 +1,11 @@
 // app/checkout/success/page.tsx
 import Link from 'next/link';
 import Button from '@/components/Button';
+import { useSearchParams } from 'next/navigation';
 
 export default function CheckoutSuccessPage() {
+  const searchParams = useSearchParams();
+  const trackingCode = searchParams.get('trackingCode');
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -12,6 +15,15 @@ export default function CheckoutSuccessPage() {
           <p className="text-gray-600 mb-6">
             Thank you for your purchase. Your order has been received and is being processed.
           </p>
+          {trackingCode && (
+            <div className="mb-6 p-4 rounded-md bg-green-50 border border-green-200">
+              <p className="text-green-800 font-medium">Your tracking code</p>
+              <p className="text-green-900 text-xl font-bold mt-1" data-testid="tracking-code">
+                {trackingCode}
+              </p>
+              <p className="text-green-700 text-sm mt-1">Use this code to track your order status.</p>
+            </div>
+          )}
           <p className="text-gray-500 text-sm mb-8">
             You will receive an email confirmation shortly with your order details.
           </p>
