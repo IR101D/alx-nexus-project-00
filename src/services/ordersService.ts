@@ -1,7 +1,7 @@
 import { CheckoutRequest, CheckoutResponse, ShippingAddress } from "@/interfaces";
 import cartService from "./cartService";
 
-const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://nexus-backend-4.up.railway.app";
+const BASE ="http://localhost:8080";
 const BASE_URL = `${BASE.replace(/\/\/$/, "")}/api/orders`;
 
 // Helper to append optional guestToken as query param if provided

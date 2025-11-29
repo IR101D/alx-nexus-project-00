@@ -113,11 +113,12 @@ export default function CheckoutPage() {
       };
 
       // Call checkout API
-      await ordersService.checkoutOrder(shippingAddress,formData.email?? '');
+      const resp = await ordersService.checkoutOrder(shippingAddress, formData.email ?? '');
 
-      // Clear cart and redirect to success page
+      // Clear cart and redirect to success page (include trackingCode if present)
       dispatch(clearCart());
-      router.push('/checkout/success');
+      const trackingQuery = resp?.trackingCode ? `?trackingCode=${encodeURIComponent(resp.trackingCode)}` : '';
+      router.push(`/checkout/success${trackingQuery}`);
       
     } catch (error) {
       console.error('Checkout failed:', error);
