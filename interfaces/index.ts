@@ -208,6 +208,30 @@ export interface Order {
   timeline: OrderStatus[];
 }
 
+// New: Orders API types
+export interface ShippingAddress {
+  fullName: string;
+  line1: string;
+  line2: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  phone: string;
+}
+
+export interface CheckoutRequest {
+  shippingAddress: ShippingAddress;
+  guestToken?: string | null;
+  email : string;
+}
+
+export interface CheckoutResponse {
+  orderId?: string | number;
+  status?: string;
+  message?: string;
+}
+
 export interface ApiCartItemResponse {
     productId: number;
     productName: string;
