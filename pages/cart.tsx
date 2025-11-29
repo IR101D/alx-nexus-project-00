@@ -13,9 +13,13 @@ import {
   incrementQuantity, 
   decrementQuantity, 
   removeItem, 
-  clearCart 
+  clearCart,
+  updateCartItemAsync,
+  removeFromCartAsync,
+  clearCartAsync 
 } from "@/src/store/slices/cartSlice";
 import PageCover from "@/components/layout/PageCover";
+import Swal from "sweetalert2";
 
 export default function Cart () {
     const dispatch = useAppDispatch();
@@ -25,24 +29,81 @@ export default function Cart () {
     const total = useAppSelector(selectCartTotal);
 
     const handleIncrement = (id: number) => {
+        // Optimistic local update
         dispatch(incrementQuantity(id));
+        const current = cartItems.find((it) => it.id === id);
+        const nextQty = (current?.quantity ?? 0) + 1;
+        dispatch(updateCartItemAsync({ productId: id, quantity: nextQty }));
     };
     
     const handleDecrement = (id: number) => {
+        // Optimistic local update
         dispatch(decrementQuantity(id));
+        const current = cartItems.find((it) => it.id === id);
+        const nextQty = Math.max(1, (current?.quantity ?? 1) - 1);
+        dispatch(updateCartItemAsync({ productId: id, quantity: nextQty }));
     };
 
-    const handleRemove = (id: number) => {
+    const handleRemove = async (id: number) => {
+        const item = cartItems.find((it) => it.id === id);
+        // Optimistic local update
         dispatch(removeItem(id));
+        try {
+          await dispatch(removeFromCartAsync(id) as any);
+          await Swal.fire({
+            icon: 'success',
+            title: 'Removed from cart',
+            text: item ? `${item.name} has been removed from your cart.` : 'Item removed from your cart.',
+            timer: 1500,
+            showConfirmButton: false,
+            position: 'top-end',
+            toast: true,
+          });
+        } catch (err) {
+          const message = err instanceof Error ? err.message : 'Failed to remove item';
+          await Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message,
+          });
+        }
     };
 
-    const handleClearCart = () => {
+    const handleClearCart = async () => {
+        // Optimistic local clear
         dispatch(clearCart());
+        try {
+          await dispatch(clearCartAsync() as any);
+          await Swal.fire({
+            icon: 'success',
+            title: 'Cart cleared',
+            text: 'All items have been removed from your cart.',
+            timer: 1500,
+            showConfirmButton: false,
+            position: 'top-end',
+            toast: true,
+          });
+        } catch (err) {
+          const message = err instanceof Error ? err.message : 'Failed to clear cart';
+          await Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message,
+          });
+        }
     };
 
-    const handleCheckout = () => {
+    const handleCheckout = async () => {
         console.log('Preceeding to checkout the items:', cartItems);
-        alert('Proceeding to checkout');
+        await Swal.fire({
+          icon: 'info',
+          title: 'Proceed to checkout',
+          text: 'Redirecting you to the checkout page...',
+          timer: 1200,
+          showConfirmButton: false,
+          position: 'top-end',
+          toast: true,
+        });
     };
 
     if (cartItems.length === 0) {
@@ -50,12 +111,12 @@ export default function Cart () {
              <div className="min-h-screen bg-gray-500 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">Your Cart</h1>
-              <p className="text-gray-600">Your shopping cart is empty</p>
-            </div>
+
             
             <div className="bg-white rounded-lg shadow-sm p-12 max-w-md mx-auto">
+                <div className="mb-8">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-4">Your Cart</h1>
+                </div>
               <div className="text-6xl mb-4">🛒</div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Cart is Empty</h2>
               <p className="text-gray-600 mb-6">

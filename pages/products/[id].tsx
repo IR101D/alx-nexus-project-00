@@ -1,18 +1,18 @@
 "use client";
-
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Button from "@/components/Button";
 import Reviews from "@/components/HomePage/reviews";
 import { productData as fallbackProductData } from "@/constants/data";
-import productsDetailService from "@/src/services/productsDetailService";
 import productsService from "@/src/services/productsService";
 import { ApiProduct } from "@/interfaces";
 import { useAppDispatch } from "@/src/store/hooks/redux";
-import { addItem } from "@/src/store/slices/cartSlice";
+import { addToCartAsync } from "@/src/store/slices/cartSlice";
+import Swal from "sweetalert2";
 
 export default function ProductDetailPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedSize, setSelectedSize] = useState(0);
@@ -21,10 +21,10 @@ export default function ProductDetailPage() {
   const [productDetail, setProductDetail] = useState<ApiProduct | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     // Reset selection when a new product loads
+      // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedImage(0);
     setSelectedColor(0);
     setSelectedSize(0);
@@ -67,20 +67,28 @@ export default function ProductDetailPage() {
     };
   }, [productDetail]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!displayProduct) return;
-    const payload = {
-      id: displayProduct.id,
-      name: displayProduct.name,
-      price: displayProduct.price,
-      image: displayProduct.images[selectedImage] ?? displayProduct.images[0],
-      color: displayProduct.colors[selectedColor].name,
-      size: displayProduct.sizes[selectedSize],
-      quantity,
-    };
-
-    dispatch(addItem(payload));
-    alert(`${displayProduct.name} added to cart!`);
+    try {
+      await dispatch(addToCartAsync({ productId: displayProduct.id, quantity }));
+      await Swal.fire({
+        icon: 'success',
+        title: 'Added to cart',
+        text: `${displayProduct.name} has been added to your cart.`,
+        timer: 1500,
+        showConfirmButton: false,
+        position: 'top-end',
+        toast: true,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to add to cart';
+      await Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message,
+      });
+      console.error('Add to cart error:', err);
+    }
   };
 
   const incrementQuantity = () => {

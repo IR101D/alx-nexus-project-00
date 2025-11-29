@@ -1,5 +1,5 @@
 import { ApiCartItemRequest, ApiCartResponse } from "@/interfaces";
-const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://nexus-backend-4.up.railway.app";
+const BASE = "http://localhost:8080";
 const BASE_URL = `${BASE.replace(/\/$/, "")}/api/cart`;
 
 // Minimal API models matching the backend contract
@@ -24,7 +24,7 @@ export const ensureGuestToken = (): string => {
 };
 
 // Build URL with optional guest token using spec param names
-const withGuestToken = (url: string, guestToken?: string | null, paramName: "arg0" | "arg1" | "arg2" = "arg0") => {
+const withGuestToken = (url: string, guestToken?: string | null, paramName: "guestToken"|"arg0" | "arg1" | "arg2" = "arg0") => {
   const u = new URL(url);
   const token = guestToken ?? getGuestToken();
   if (token) u.searchParams.set(paramName, token);
@@ -32,7 +32,7 @@ const withGuestToken = (url: string, guestToken?: string | null, paramName: "arg
 };
 
 export const getMyCart = async (guestToken?: string | null): Promise<ApiCartResponse> => {
-  const url = withGuestToken(BASE_URL, guestToken, "arg0");
+  const url = withGuestToken(BASE_URL, guestToken, "guestToken");
   const res = await fetch(url, { method: "GET" });
   if (!res.ok) {
     const text = await res.text();
@@ -43,7 +43,7 @@ export const getMyCart = async (guestToken?: string | null): Promise<ApiCartResp
 
 export const addItem = async (item: ApiCartItemRequest, guestToken?: string | null): Promise<ApiCartResponse> => {
   // POST /api/cart/items with optional guest token as arg1
-  const url = withGuestToken(`${BASE_URL}/items`, guestToken, "arg1");
+  const url = withGuestToken(`${BASE_URL}/items`, guestToken, "guestToken");
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -66,9 +66,9 @@ export const updateItem = async (
   // PUT /api/cart/items/{productId}?arg1=<quantity>&arg2=<guestToken>
   const base = `${BASE_URL}/items/${encodeURIComponent(productId)}`;
   const u = new URL(base);
-  u.searchParams.set("arg1", String(quantity));
+  u.searchParams.set("quantity", String(quantity));
   const token = guestToken ?? getGuestToken();
-  if (token) u.searchParams.set("arg2", token);
+  if (token) u.searchParams.set("guestToken", token);
   const res = await fetch(u.toString(), { method: "PUT" });
   if (!res.ok) {
     const text = await res.text();
@@ -79,7 +79,7 @@ export const updateItem = async (
 
 export const removeItem = async (productId: number, guestToken?: string | null): Promise<ApiCartResponse> => {
   // DELETE /api/cart/items/{productId}?arg1=<guestToken>
-  const url = withGuestToken(`${BASE_URL}/items/${encodeURIComponent(productId)}`, guestToken, "arg1");
+  const url = withGuestToken(`${BASE_URL}/items/${encodeURIComponent(productId)}`, guestToken, "guestToken");
   const res = await fetch(url, { method: "DELETE" });
   if (!res.ok) {
     const text = await res.text();
@@ -90,7 +90,7 @@ export const removeItem = async (productId: number, guestToken?: string | null):
 
 export const clearCart = async (guestToken?: string | null): Promise<void> => {
   // DELETE /api/cart/clear?arg0=<guestToken>
-  const url = withGuestToken(`${BASE_URL}/clear`, guestToken, "arg0");
+  const url = withGuestToken(`${BASE_URL}/clear`, guestToken, "guestToken");
   const res = await fetch(url, { method: "DELETE" });
   if (!res.ok) {
     const text = await res.text();
