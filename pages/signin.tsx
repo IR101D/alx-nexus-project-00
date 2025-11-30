@@ -5,9 +5,13 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Button from '@/components/Button';
 import { SignInFormData } from '@/interfaces';
+import authService from '@/src/services/authService';
+import { useRouter } from 'next/router';
+import Swal from 'sweetalert2';
 
 
 export default function SignInPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState<SignInFormData>({
     email: '',
     password: '',
@@ -16,6 +20,8 @@ export default function SignInPage() {
 
   const [errors, setErrors] = useState<Partial<SignInFormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -58,19 +64,60 @@ export default function SignInPage() {
     }
 
     setIsSubmitting(true);
+    setApiError(null);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Handle successful sign in
-      console.log('Sign in successful:', formData);
-      // Redirect to home or dashboard
-      // router.push('/');
+      const res = await authService.login({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (res.accessToken && res.refreshToken) {
+        // Persist tokens
+        try {
+          localStorage.setItem('accessToken', res.accessToken);
+          localStorage.setItem('refreshToken', res.refreshToken);
+          // Optionally mirror into sessionStorage for non-remembered sessions
+          if (!formData.rememberMe) {
+            try {
+              sessionStorage.setItem('accessToken', res.accessToken);
+              sessionStorage.setItem('refreshToken', res.refreshToken);
+            } catch {}
+          }
+        } catch {}
+
+        // Mark success to hide the form and show SweetAlert
+        setIsSuccess(true);
+        await Swal.fire({
+          icon: 'success',
+          title: 'Signed in successfully',
+          text: 'Welcome back! Redirecting you to the home page...',
+          confirmButtonColor: '#B88E2F',
+          timer: 1500,
+          showConfirmButton: true,
+        });
+        router.push('/');
+        return;
+      }
+
+      // Handle failure
+      setApiError(res.message || 'Sign in failed. Please try again.');
+      await Swal.fire({
+        icon: 'error',
+        title: 'Sign in failed',
+        text: res.message || 'Please check your credentials and try again.',
+        confirmButtonColor: '#B88E2F',
+      });
       
     } catch (error) {
       console.error('Sign in failed:', error);
-      // Handle error (show error message to user)
+      setApiError('Sign in failed due to a network or server error.');
+      await Swal.fire({
+        icon: 'error',
+        title: 'Network error',
+        text: 'Please check your connection and try again.',
+        confirmButtonColor: '#B88E2F',
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -97,6 +144,12 @@ export default function SignInPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {apiError && (
+            <div className="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-700 border border-red-200">
+              {apiError}
+            </div>
+          )}
+          {!isSuccess && (
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Email Field */}
             <div>
@@ -191,7 +244,7 @@ export default function SignInPage() {
                 )}
               </Button>
             </div>
-
+            
             {/* Social Sign In */}
             <div className="mt-6">
               <div className="relative">
@@ -231,6 +284,7 @@ export default function SignInPage() {
               </div>
             </div>
           </form>
+          )}
 
           {/* Guest Checkout Option */}
           <div className="mt-6 text-center">

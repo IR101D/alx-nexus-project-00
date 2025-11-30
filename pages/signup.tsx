@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Button from '@/components/Button';
 import { SignUpFormData } from '@/interfaces';
 import authService from '@/src/services/authService';
+import Swal from 'sweetalert2';
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState<SignUpFormData>({
@@ -103,13 +104,33 @@ export default function SignUpPage() {
           localStorage.setItem('refreshToken', res.refreshToken);
         }
         setApiSuccess('Account created successfully! You are now signed in.');
+        // SweetAlert success notification
+        await Swal.fire({
+          icon: 'success',
+          title: 'Account created',
+          text: 'Your account was created successfully and you are now signed in.',
+          confirmButtonColor: '#B88E2F',
+        });
       } else {
         setApiError(res?.message || 'Sign up failed. Please try again.');
+        // SweetAlert error notification
+        await Swal.fire({
+          icon: 'error',
+          title: 'Sign up failed',
+          text: res?.message || 'Please try again.',
+          confirmButtonColor: '#B88E2F',
+        });
       }
       
     } catch (error) {
       console.error('Sign up failed:', error);
       setApiError('Network error. Please try again.');
+      await Swal.fire({
+        icon: 'error',
+        title: 'Network error',
+        text: 'Please check your connection and try again.',
+        confirmButtonColor: '#B88E2F',
+      });
     } finally {
       setIsSubmitting(false);
     }
