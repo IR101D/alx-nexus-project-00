@@ -161,6 +161,8 @@ export interface SignUpFormData {
   email: string;
   password: string;
   confirmPassword: string;
+  phone?: string;
+  address?: string;
   agreeToTerms: boolean;
   agreeToTermsAlert: string,
   newsletter: boolean;
@@ -265,4 +267,19 @@ export interface ApiCartResponse {
 export interface ApiCartItemRequest {
     productId: number;
     quantity?: number; // default on backend is likely 1
+}
+
+export interface RegisterRequest {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    phone?: string;
+    address?: string;
+}
+
+export interface RegisterResponse {
+    accessToken?: string;
+    refreshToken?: string;
+    message?: string;
 }

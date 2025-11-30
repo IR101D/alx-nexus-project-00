@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
 import CartIcon from '../Products/CartIcon';
@@ -12,12 +12,71 @@ const Header : React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch products for search (you might want to use a context or global state)
   useEffect(() => {
    //replace with API request later
     setProducts(ProductsData);
   }, []);
+
+  // Determine auth state from localStorage tokens
+  useEffect(() => {
+    const readAuth = () => {
+      try {
+        const access = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+        const refresh = typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null;
+        setIsLoggedIn(!!access && !!refresh);
+      } catch {
+        setIsLoggedIn(false);
+      }
+    };
+
+    readAuth();
+
+    // React to cross-tab changes
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'accessToken' || e.key === 'refreshToken') {
+        readAuth();
+      }
+    };
+    window.addEventListener('storage', onStorage);
+
+    // Update when tab regains focus
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') readAuth();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, []);
+
+  // Close user dropdown when clicking outside
+  useEffect(() => {
+    const onClickOutside = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    if (isUserMenuOpen) {
+      document.addEventListener('mousedown', onClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, [isUserMenuOpen]);
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+    } catch {}
+    setIsLoggedIn(false);
+    setIsUserMenuOpen(false);
+  };
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -68,9 +127,34 @@ const Header : React.FC = () => {
             <button className="text-gray-500 hover:text-gray-700 p-2">
               <CartIcon/>
             </button>
-             <Link href="/signin" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
-              Sign In
-            </Link>
+            {!isLoggedIn ? (
+              <Link href="/signin" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
+                Sign In
+              </Link>
+            ) : (
+              <div className="relative" ref={userMenuRef}>
+                <button
+                  onClick={() => setIsUserMenuOpen((v) => !v)}
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 border border-gray-200 rounded-md"
+                >
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 text-gray-700 text-xs font-semibold">U</span>
+                  <span className="hidden sm:inline">Account</span>
+                  <svg className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-40 rounded-md border border-gray-200 bg-white shadow-lg z-50">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
           </div>
         </div>
