@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Button from '@/components/Button';
 import { SignUpFormData } from '@/interfaces';
+import authService from '@/src/services/authService';
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState<SignUpFormData>({
@@ -12,6 +13,8 @@ export default function SignUpPage() {
     email: '',
     password: '',
     confirmPassword: '',
+    phone: '',
+    address: '',
     agreeToTerms: false,
     agreeToTermsAlert:'',
     newsletter: true
@@ -19,6 +22,8 @@ export default function SignUpPage() {
 
   const [errors, setErrors] = useState<Partial<SignUpFormData>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string>('');
+  const [apiSuccess, setApiSuccess] = useState<string>('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -79,19 +84,32 @@ export default function SignUpPage() {
     }
 
     setIsSubmitting(true);
+    setApiError('');
+    setApiSuccess('');
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Handle successful sign up
-      console.log('Sign up successful:', formData);
-      // Redirect to verification or home page
-      // router.push('/');
+      const res = await authService.register({
+        email: formData.email.trim(),
+        password: formData.password,
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        phone: formData.phone?.trim() || undefined,
+        address: formData.address?.trim() || undefined,
+      });
+
+      if (res?.accessToken && res?.refreshToken) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('accessToken', res.accessToken);
+          localStorage.setItem('refreshToken', res.refreshToken);
+        }
+        setApiSuccess('Account created successfully! You are now signed in.');
+      } else {
+        setApiError(res?.message || 'Sign up failed. Please try again.');
+      }
       
     } catch (error) {
       console.error('Sign up failed:', error);
-      // Handle error (show error message to user)
+      setApiError('Network error. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -119,6 +137,13 @@ export default function SignUpPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* API level messages */}
+            {apiError && (
+              <div className="p-3 rounded border border-red-200 bg-red-50 text-red-700">{apiError}</div>
+            )}
+            {apiSuccess && (
+              <div className="p-3 rounded border border-green-200 bg-green-50 text-green-700">{apiSuccess}</div>
+            )}
             {/* Name Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -165,6 +190,44 @@ export default function SignUpPage() {
                     <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
                   )}
                 </div>
+              </div>
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                Phone (optional)
+              </label>
+              <div className="mt-1">
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  value={formData.phone || ''}
+                  onChange={handleInputChange}
+                  className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#B88E2F] focus:border-[#B88E2F] border-gray-300`}
+                  placeholder="e.g., +1 555 123 4567"
+                />
+              </div>
+            </div>
+
+            {/* Address */}
+            <div>
+              <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                Address (optional)
+              </label>
+              <div className="mt-1">
+                <input
+                  id="address"
+                  name="address"
+                  type="text"
+                  autoComplete="street-address"
+                  value={formData.address || ''}
+                  onChange={handleInputChange}
+                  className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#B88E2F] focus:border-[#B88E2F] border-gray-300`}
+                  placeholder="Your street address"
+                />
               </div>
             </div>
 
