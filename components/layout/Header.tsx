@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
@@ -16,6 +17,13 @@ const Header : React.FC = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement | null>(null);
 
+
+    const pathname = usePathname();
+
+    useEffect(() => {
+        const token = localStorage.getItem("accessToken");
+        setIsLoggedIn(!!token);
+    }, [pathname]);
   // Fetch products for search (you might want to use a context or global state)
   useEffect(() => {
    //replace with API request later
@@ -73,6 +81,11 @@ const Header : React.FC = () => {
     try {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      // Also clear any sessionStorage mirrors
+      try {
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
+      } catch {}
     } catch {}
     setIsLoggedIn(false);
     setIsUserMenuOpen(false);

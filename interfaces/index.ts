@@ -283,3 +283,15 @@ export interface RegisterResponse {
     refreshToken?: string;
     message?: string;
 }
+
+// Auth: Login API types
+export interface LoginRequest {
+    email: string;
+    password: string;
+}
+
+export interface LoginResponse {
+    accessToken?: string;
+    refreshToken?: string;
+    message?: string;
+}
