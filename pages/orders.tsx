@@ -3,14 +3,18 @@
 import { useState } from 'react';
 import Button from '@/components/Button';
 import { OrderItem, OrderStatus,Order } from '@/interfaces';
+import ordersService from '@/src/services/ordersService';
 
 
 export default function OrderTrackingPage() {
   const [orderId, setOrderId] = useState('');
   const [email, setEmail] = useState('');
+  const [trackingCode, setTrackingCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [order, setOrder] = useState<Order | null>(null);
   const [error, setError] = useState('');
+  const [trackingSteps, setTrackingSteps] = useState<string[]>([]);
+  const [infoMessage, setInfoMessage] = useState<string>('');
 
   // Mock order data - replace with actual API call
   const mockOrder: Order = {
@@ -81,9 +85,14 @@ export default function OrderTrackingPage() {
 
   const handleTrackOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!orderId.trim() || !email.trim()) {
-      setError('Please enter both order ID and email address');
+
+    // Require email and at least one of orderId or trackingCode
+    if (!email.trim()) {
+      setError('Please enter your email address');
+      return;
+    }
+    if (!orderId.trim() && !trackingCode.trim()) {
+      setError('Please provide either Order ID or Tracking Code');
       return;
     }
 
@@ -94,15 +103,28 @@ export default function OrderTrackingPage() {
 
     setIsLoading(true);
     setError('');
+    setInfoMessage('');
+    setTrackingSteps([]);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // For demo purposes, always return the mock order
-      // In real app, you'd call your API here
-      setOrder(mockOrder);
-      
+      const result = await ordersService.trackOrder({
+        email: email.trim(),
+        orderId: orderId.trim() || undefined,
+        trackingCode: trackingCode.trim() || undefined,
+      });
+
+      if (result?.steps?.length) {
+        setTrackingSteps(result.steps);
+      }
+      if (result?.message && (!result.steps || result.steps.length === 0)) {
+        setError(result.message);
+      } else if (!result?.steps || result.steps.length === 0) {
+        setInfoMessage('No tracking updates are available yet. Please check back later.');
+      }
+
+      // We currently do not have an API providing full order details here,
+      // so we keep detailed order section hidden by leaving `order` as null.
+      setOrder(null);
     } catch (error) {
       setError('Order not found. Please check your order ID and email address.');
       setOrder(null);
@@ -156,7 +178,7 @@ export default function OrderTrackingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="orderId" className="block text-sm font-medium text-gray-700 mb-2">
-                  Order ID *
+                  Order ID (optional)
                 </label>
                 <input
                   type="text"
@@ -165,8 +187,22 @@ export default function OrderTrackingPage() {
                   onChange={(e) => setOrderId(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B88E2F] focus:border-transparent"
                   placeholder="e.g., ORD-123456"
-                  required
                 />
+              </div>
+
+              <div>
+                <label htmlFor="trackingCode" className="block text-sm font-medium text-gray-700 mb-2">
+                  Tracking Code (optional)
+                </label>
+                <input
+                  type="text"
+                  id="trackingCode"
+                  value={trackingCode}
+                  onChange={(e) => setTrackingCode(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B88E2F] focus:border-transparent"
+                  placeholder="e.g., TRK-789456123"
+                />
+                <p className="mt-2 text-xs text-gray-500">Provide either Order ID or Tracking Code along with your email.</p>
               </div>
 
               <div>
@@ -188,6 +224,11 @@ export default function OrderTrackingPage() {
             {error && (
               <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-red-700">{error}</p>
+              </div>
+            )}
+            {!error && infoMessage && (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-blue-700">{infoMessage}</p>
               </div>
             )}
 
@@ -212,6 +253,18 @@ export default function OrderTrackingPage() {
             </Button>
           </form>
         </div>
+
+        {/* Tracking Steps */}
+        {trackingSteps.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Tracking History</h2>
+            <ol className="list-decimal ml-6 space-y-2">
+              {trackingSteps.map((step, idx) => (
+                <li key={idx} className="text-gray-700">{step}</li>
+              ))}
+            </ol>
+          </div>
+        )}
 
         {/* Order Details */}
         {order && (
