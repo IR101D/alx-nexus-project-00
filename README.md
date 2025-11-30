@@ -100,7 +100,7 @@ This program emphasizes building real products—not just following tutorials.
 ## 🚀 Deployment
 
 Live Demo:
-👉 **[https://ecommerce-nexus.vercel.app/](https://ecommerce-nexus.vercel.app/)**
+👉 https://alx-project-nexus-deployed.vercel.app/
 
 ---
 
